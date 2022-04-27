@@ -12,6 +12,7 @@ from PIL import Image
 import json
 import re
 import uuid
+from pdf2image import convert_from_path
 
 
 
@@ -31,6 +32,27 @@ def index(request):
     file = default_storage.open(file_name)
     file_url = default_storage.url(file_name)
     file = file_url[1:]
+    pages = convert_from_path(file, 500)
+    text_check = "BẢNG KẾ THỦ PHÍ DỊCH VỤ"
+    file_match = [];
+    for page in pages:
+        file_v = "media/cache/{}.jpg".format( str(uuid.uuid4()) )
+        page.save(file_v, 'JPEG')
+        img = cv2.imread(file_v)
+        image_re = image_resize(img, width = 3000)
+        img = image_re[400:650, 1200:2200]
+        to_t= pytesseract.image_to_string(img, lang='vie')
+        x_macth = re.search(text_check, to_t)
+        if x_macth: file_match.append(file_v)
+    kq = [];
+    for file_c in file_match:
+        kq.append(orc_func(file_c));
+    return JsonResponse({'data' : kq})
+    
+
+    # return JsonResponse({'data' : merge_text_value})
+
+def orc_func(file):
     img = cv2.imread(file)
 
     # điều chỉnh kích thước
@@ -125,10 +147,14 @@ def index(request):
                 x_macth = re.search(text_amt, to_t)
                 if x_macth: cotx0_end = cell[0]
             elif cotx0_code == cell[0]:
-                to_t= pytesseract.image_to_string(hinh, lang='eng')
+                hinh2 = gr[cell[1]+5:cell[3] , cell[0]:cell[2]]
+                to_t= pytesseract.image_to_string(hinh2, lang='eng')
                 to_code.append(to_t.strip().replace("\n", ""))
             elif cotx0_firt == cell[0]:
                 to_t= pytesseract.image_to_string(hinh, lang='vie+eng')
+                if  to_t.strip().replace("\n", " ") == "":
+                    file_name_crop_t = "media/cache/{}.jpg".format( str(uuid.uuid4()) )
+                    cv2.imwrite(file_name_crop_t, hinh)
                 to_text.append(to_t.strip().replace("\n", " "))
             elif cotx0_end == cell[0]:
                 to_t= pytesseract.image_to_string(hinh, lang='eng')
@@ -139,15 +165,20 @@ def index(request):
         to_value_conver += [i for i in list if i]
     merge_text_value = []
     for key, value in enumerate(to_text):
+        if key < len(to_code):
+            code = to_code[key]
+        else:
+            code = ""
+        if key < len(to_value_conver):
+            value_c = to_value_conver[key]
+        else:
+            value_c = ""
         merge_text_value.append({
-            'code': to_code[key],
+            'code': code,
             'text':  value,
-            'value': to_value_conver[key]
+            'value': value_c
         })
-
-    return JsonResponse({'data' : merge_text_value})
-
-
+    return merge_text_value
 def min_max_h(img):
     # ảnh nhị phân (binary image)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -262,4 +293,3 @@ def get_bottom_right(right_points, bottom_points, points):
             if [right[0], bottom[1]] in points:
                 return right[0], bottom[1]
     return None, None
-
