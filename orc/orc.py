@@ -103,16 +103,16 @@ def index(request):
     gr = cv2.threshold(gr, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
     to_text = []
     to_value = []
-    cotx0_firt = NULL
-    cotx0_end = NULL; 
+    cotx0_firt = None
+    cotx0_end = None
     text_amt = "Số tiền"
     text_content = "Nội dung"
     for cell in cells:
-        if(cotx0_firt == NULL or cotx0_end == NULL or cotx0_firt == cell[0] or cotx0_end == cell[0]):
+        if(cotx0_firt == None or cotx0_end == None or cotx0_firt == cell[0] or cotx0_end == cell[0]):
             file = "media/case/{}.jpg".format( str(uuid.uuid4()) )
             hinh = gr[cell[1]:cell[3] , cell[0]:cell[2]]
             
-            if cotx0_firt == NULL or cotx0_end == NULL:
+            if cotx0_firt == None or cotx0_end == None:
                 to_t= pytesseract.image_to_string(hinh, lang='vie+eng')
                 x_macth = re.search(text_content, to_t)
                 if x_macth: cotx0_firt = cell[0]
