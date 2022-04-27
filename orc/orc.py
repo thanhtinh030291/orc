@@ -129,7 +129,7 @@ def index(request):
                 to_code.append(to_t.strip().replace("\n", ""))
             elif cotx0_firt == cell[0]:
                 to_t= pytesseract.image_to_string(hinh, lang='vie+eng')
-                to_text.append(to_t.strip()).replace("\n", " ")
+                to_text.append(to_t.strip().replace("\n", " "))
             elif cotx0_end == cell[0]:
                 to_t= pytesseract.image_to_string(hinh, lang='eng')
                 to_value.append(to_t.strip())
