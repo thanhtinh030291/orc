@@ -97,8 +97,9 @@ def index(request):
         if right and bottom:
             cv2.rectangle(img, (left, top), (right, bottom), (0, 0, 255), 2)
             cells.append([left, top, right, bottom])
-    cv2.imwrite('media/testdd.jpg', img)
-    image = cv2.imread("media/testdd.jpg")
+    file_name_crop = "media/{}.jpg".format( str(uuid.uuid4()) )
+    cv2.imwrite(file_name_crop, img)
+    image = cv2.imread(file_name_crop)
     gr = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gr = cv2.threshold(gr, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
     to_text = []
