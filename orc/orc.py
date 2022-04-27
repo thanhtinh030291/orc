@@ -126,13 +126,13 @@ def index(request):
                 if x_macth: cotx0_end = cell[0]
             elif cotx0_code == cell[0]:
                 to_t= pytesseract.image_to_string(hinh, lang='eng')
-                to_code.append(to_t)
+                to_code.append(to_t.strip().replace("\n", ""))
             elif cotx0_firt == cell[0]:
                 to_t= pytesseract.image_to_string(hinh, lang='vie+eng')
-                to_text.append(to_t)
+                to_text.append(to_t.strip()).replace("\n", " ")
             elif cotx0_end == cell[0]:
-                to_t= pytesseract.image_to_string(hinh, lang='vie+eng')
-                to_value.append(to_t)
+                to_t= pytesseract.image_to_string(hinh, lang='eng')
+                to_value.append(to_t.strip())
     to_value_conver = []
     for value in to_value:
         list = value.split('\n')
