@@ -1,6 +1,4 @@
-from asyncio.windows_events import NULL
 import cv2
-from cv2 import merge
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt

@@ -6,6 +6,10 @@ pip install torch
 pip install pytesseract
 pip3 install virtualenv
 virtualenv venv -p python3
+
 py -m venv env
+.\env\Scripts\activate
+where python
+
 python manage.py runserver
 
