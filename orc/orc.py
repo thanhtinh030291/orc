@@ -102,14 +102,19 @@ def index(request):
     image = cv2.imread(file_name_crop)
     gr = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gr = cv2.threshold(gr, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+    to_code = []
     to_text = []
     to_value = []
+    cotx0_code = None
     cotx0_firt = None
     cotx0_end = None
     text_amt = "Số tiền"
     text_content = "Nội dung"
     for cell in cells:
-        if(cotx0_firt == None or cotx0_end == None or cotx0_firt == cell[0] or cotx0_end == cell[0]):
+        if cotx0_code == None : 
+            cotx0_code = cell[0]
+            continue
+        if(cotx0_firt == None or cotx0_end == None or cotx0_firt == cell[0] or cotx0_end == cell[0] or cotx0_code == cell[0]):
             file = "media/case/{}.jpg".format( str(uuid.uuid4()) )
             hinh = gr[cell[1]:cell[3] , cell[0]:cell[2]]
             
@@ -119,7 +124,9 @@ def index(request):
                 if x_macth: cotx0_firt = cell[0]
                 x_macth = re.search(text_amt, to_t)
                 if x_macth: cotx0_end = cell[0]
-
+            elif cotx0_code == cell[0]:
+                to_t= pytesseract.image_to_string(hinh, lang='eng')
+                to_code.append(to_t)
             elif cotx0_firt == cell[0]:
                 to_t= pytesseract.image_to_string(hinh, lang='vie+eng')
                 to_text.append(to_t)
@@ -133,6 +140,7 @@ def index(request):
     merge_text_value = []
     for key, value in enumerate(to_text):
         merge_text_value.append({
+            'code': to_code[key],
             'text':  value,
             'value': to_value_conver[key]
         })
