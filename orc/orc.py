@@ -33,7 +33,7 @@ def index(request):
     file_url = default_storage.url(file_name)
     file = file_url[1:]
     pages = convert_from_path(file, 500)
-    text_check = "BẢNG KẾ THỦ PHÍ DỊCH VỤ"
+    text_check = "LIST OF SERVICES"
     file_match = [];
     for page in pages:
         file_v = "media/cache/{}.jpg".format( str(uuid.uuid4()) )
@@ -132,31 +132,39 @@ def orc_func(file):
     cotx0_end = None
     text_amt = "Số tiền"
     text_content = "Nội dung"
+    x1 = None
+    x2 = None
     for cell in cells:
         if cotx0_code == None : 
             cotx0_code = cell[0]
             continue
         if(cotx0_firt == None or cotx0_end == None or cotx0_firt == cell[0] or cotx0_end == cell[0] or cotx0_code == cell[0]):
-            file = "media/case/{}.jpg".format( str(uuid.uuid4()) )
             hinh = gr[cell[1]:cell[3] , cell[0]:cell[2]]
-            
             if cotx0_firt == None or cotx0_end == None:
                 to_t= pytesseract.image_to_string(hinh, lang='vie+eng')
                 x_macth = re.search(text_content, to_t)
-                if x_macth: cotx0_firt = cell[0]
+                if x_macth: 
+                    cotx0_firt = cell[0]
+                    #var_dump('nội dung')
+                    #var_dump(str(cell[1]) +'---'+ str(cell[3]) +'---'+  str(cell[0]) +'---'+ str(cell[2]))
                 x_macth = re.search(text_amt, to_t)
-                if x_macth: cotx0_end = cell[0]
+                if x_macth: 
+                    cotx0_end = cell[0]
+                    #var_dump('tiền')
+                    #var_dump(str(cell[1]) +'---'+ str(cell[3]) +'---'+  str(cell[0]) +'---'+ str(cell[2]))
+                    x1 = cell[0]
+                    x2 = cell[2]
             elif cotx0_code == cell[0]:
                 hinh2 = gr[cell[1]+5:cell[3] , cell[0]:cell[2]]
                 to_t= pytesseract.image_to_string(hinh2, lang='eng')
                 to_code.append(to_t.strip().replace("\n", ""))
             elif cotx0_firt == cell[0]:
+                #var_dump(str(cell[1]) +'---'+ str(cell[3]) +'---'+  str(cell[0]) +'---'+ str(cell[2]))
                 to_t= pytesseract.image_to_string(hinh, lang='vie+eng')
-                if  to_t.strip().replace("\n", " ") == "":
-                    file_name_crop_t = "media/cache/{}.jpg".format( str(uuid.uuid4()) )
-                    cv2.imwrite(file_name_crop_t, hinh)
+                #var_dump(to_t)
                 to_text.append(to_t.strip().replace("\n", " "))
-            elif cotx0_end == cell[0]:
+                #var_dump(str(cell[1]) +'---'+ str(cell[3]) +'---'+  str(cell[0]) +'---'+ str(cell[2]))
+                hinh = gr[cell[1]:cell[3] , x1:x2]
                 to_t= pytesseract.image_to_string(hinh, lang='eng')
                 to_value.append(to_t.strip())
     to_value_conver = []
